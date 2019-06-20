@@ -1,0 +1,10 @@
+.board{
+    position: absolute;
+    left: 400px;
+    top: 200px;
+}
+
+.status{
+    position: absolute;
+    top: -50px;
+}

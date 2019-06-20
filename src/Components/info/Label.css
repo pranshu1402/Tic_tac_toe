@@ -1,0 +1,16 @@
+.label p{
+    display: inline-block;
+    margin: 0px 2px;
+    width: 100px;
+    padding: 0px;
+}
+
+.label{
+    display: flex;
+    padding: 0px;
+    margin: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: #aabbcc;
+    width: 250px;
+}

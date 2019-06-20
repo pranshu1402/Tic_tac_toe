@@ -1,0 +1,10 @@
+.game{
+    margin: auto;
+}
+
+.game h1{
+    display: flex;
+    margin: auto;
+    margin-top: 50px;
+    justify-content: center;
+}
