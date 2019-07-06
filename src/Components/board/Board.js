@@ -2,7 +2,7 @@ import React from 'react';
 import Square from './Square';
 import './Board.css';
 
-function constructBoard(gameState, makeAMove, changed, complete, winnerCells){
+function constructBoard(gameState, makeMove, changed, complete, winnerCells){
     // array for square buttons
     let squares = [];
     
@@ -23,20 +23,19 @@ function constructBoard(gameState, makeAMove, changed, complete, winnerCells){
 
             //if winner is declared then match the indexes and make color white.
             if(winnerCells!==undefined){
-             console.log(winnerCells);
                 for(let k=0;k<winnerCells.length;k++){
                     let a = winnerCells[k][0];
                     let b = winnerCells[k][1];
+                    // eslint-disable-next-line
                     if(i==a && j==b){
                         color= 'white';
                     }
                 }
             }
 
-            console.log(complete + ' ' + color);
             squares.push(<Square 
                                 key={index}
-                                onClick={()=> makeAMove(index)}
+                                onClick={()=> makeMove(index)}
                                 show = {gameState[i][j]} 
                                 disable = {disable}
                                 color= {color}
@@ -58,7 +57,7 @@ export default function Board(props){
                 </div>
                 
                 <div className="playboard">
-                    {constructBoard(props.gameState, props.makeAMove, props.changed, props.hasWinner, props.winnerCells)}
+                    {constructBoard(props.gameState, props.makeMove, props.changed, props.hasWinner, props.winnerCells)}
                 </div>
               
               </div>

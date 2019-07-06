@@ -9,7 +9,7 @@ class Game extends React.Component {
     this.state = this.newState();
   }
 
-  newState(){
+  newState() {
     return {
       turn: 0,
       chance: 1,
@@ -29,18 +29,18 @@ class Game extends React.Component {
   }
 
   makeMove = (boardIndex) => {
-    let {turn, chance, symbol, gameState, moves, winner, winnerCells} = this.state;
+    let { turn, chance, symbol, gameState, moves, winner, winnerCells } = this.state;
     if (!moves.has(boardIndex)) {
       const row = boardIndex[0];
       const column = boardIndex[1];
 
       // recording the moves
       moves.set(boardIndex, {
-        chance: chance, 
-        orig: gameState[row][column], 
+        chance: chance,
+        orig: gameState[row][column],
         player: turn
       });
-      
+
       // changing gamestate for the button clicked
       gameState[row][column] = symbol[turn];
 
@@ -65,32 +65,34 @@ class Game extends React.Component {
     }
   }
 
-  revertMoves = (indexOfStepToRevert) => {
-    let {gameState, chance, moves, turn} = this.state; 
+  revertMoves = (boardIndex) => {
+    let { gameState, chance, moves, turn } = this.state;
 
     let boardIndices = [...moves.keys()];
-    let index = boardIndices.indexOf(indexOfStepToRevert);
-    chance = chance - (boardIndices.length - index) + 1;
-    
-    //get the player whose move is clicked, then set the turn to next player..
-    turn = (moves.get(indexOfStepToRevert).player + 1) % 2;
-    
-    boardIndices.forEach((indexes) => {
-      const move = moves.get(indexes);
-      const row = indexes[0];
-      const column = indexes[1];
-      gameState[row][column] = move.orig;
-      moves.delete(indexes);
-    });
+    let indexOfStepToRevert = boardIndices.indexOf(boardIndex);
+    chance = chance - (boardIndices.length - indexOfStepToRevert) + 1;
 
-    const winner = this.checkResult(gameState);
+    //get the player whose move is clicked, then set the turn to next player..
+    turn = moves.get(boardIndex).player;
+
+    for(let index= indexOfStepToRevert; index<boardIndices.length; index++){
+      const indices = boardIndices[index];
+      const move = moves.get(indices);
+      const row = indices[0];
+      const column = indices[1];
+      gameState[row][column] = move.orig;
+      moves.delete(indices);
+    };
+
+    const result = this.checkResult(gameState, moves.size);
 
     this.setState({
       turn,
       chance,
       gameState,
       moves,
-      winner
+      winner: result[0],
+      winnerCells: result[1]
     });
   }
 
@@ -107,32 +109,30 @@ class Game extends React.Component {
       ["02", "11", "20"],
     ];
 
-    lines.map((line)=>{
+    for (const line of lines) {
       const symbola = gameState[line[0][0]][line[0][1]];
       const symbolb = gameState[line[1][0]][line[1][1]];
       const symbolc = gameState[line[2][0]][line[2][1]];
-      
       if ((symbola === symbolb) && (symbola === symbolc)) {
-        console.log("winner : " + symbola);
         return [symbola, line];
       }
+    };
 
-      // if the board is fully filled, game completes with no winner.
-      if (moves === 9) {
-        console.log("Oops it's a draw");
-        return ["Oops! it's a draw. Reset to play!", []];
-      }
-      
-      return [-1, []];
-    })
+    // if the board is fully filled, game completes with no winner.
+    if (moves === 9) {
+      return ["Oops! it's a draw. Reset to play!", []];
+    }
+
+    return [-1, []];
   }
 
   reset = () => {
-    this.newState();
+    this.setState(this.newState());
   }
 
   render() {
-    const {turn, symbol, gameState, moves, winner, winnerCells}  = this.state;
+    const { turn, symbol, gameState, moves, winner, winnerCells } = this.state;
+
     return (
       <div className="game">
 
@@ -142,12 +142,12 @@ class Game extends React.Component {
           symbol={winner === -1 ? symbol[turn] : winner}
           changed={moves}
           hasWinner={winner === -1 ? false : true}
-          makeAMove={(index) => this.makeMove(index)}
+          makeMove={(index) => this.makeMove(index)}
           winnerCells={winnerCells} />
 
         <Info moves={moves}
           reset={this.reset}
-          click={(idx) => this.revertMoves(idx)} />
+          click={this.revertMoves} />
       </div>
 
     );
